@@ -1,13 +1,8 @@
 const request = require('request');
 const nodemailer = require('nodemailer');
 
-if (process.argv.length < 4) {
-  console.log("Missing argument.");
-  process.exit(1);
-}
-
-var api_key  = process.argv[2];
-var mailPass  = process.argv[3];
+var api_key  = process.env.SOLAR_API_KEY;
+var mailPass  = process.env.GMAIL_PASSWORD;
 const url = 'https://monitoringapi.solaredge.com/site/30221/timeFrameEnergy'
 var today = new Date().toISOString().slice(0,10); // Today!
 var yesterday = new Date();
