@@ -27,7 +27,7 @@ request(fullUrl, { json: true }, (err, res, body) => {
     if (parseFloat(body.timeFrameEnergy.energy) < threshold) {
       sendAlert(body.timeFrameEnergy.energy);
     }
-    process.exit(0);
+    // process.exit(0);
   } catch (err) {
     console.log(err);
     process.exit(1);
