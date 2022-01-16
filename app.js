@@ -3,6 +3,12 @@ const nodemailer = require("nodemailer");
 
 var api_key = process.env.SOLAR_API_KEY;
 var mailPass = process.env.GMAIL_PASS;
+var threshold = process.env.SOLAR_THRESHOLD;
+if (threshold && threshold != "") {
+  threshold = parseInt(threshold);
+} else {
+  threshold = 1000;
+}
 const url = "https://monitoringapi.solaredge.com/site/30221/timeFrameEnergy";
 var today = new Date().toISOString().slice(0, 10); // Today!
 var yesterday = new Date();
@@ -18,7 +24,7 @@ request(fullUrl, { json: true }, (err, res, body) => {
       process.exit(1);
     }
     console.log(body);
-    if (parseFloat(body.timeFrameEnergy.energy) < 1000) {
+    if (parseFloat(body.timeFrameEnergy.energy) < threshold) {
       sendAlert(body.timeFrameEnergy.energy);
     }
     process.exit(0);
