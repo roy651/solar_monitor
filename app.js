@@ -14,8 +14,16 @@ var today = new Date().toISOString().slice(0, 10); // Today!
 var yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
 yesterday = yesterday.toISOString().slice(0, 10); // Yesterday!
+var tommorrow = new Date();
+tommorrow.setDate(yesterday.getDate() + 1);
+tommorrow = tommorrow.toISOString().slice(0, 10); // Yesterday!
 var fullUrl =
   url + "?startDate=" + yesterday + "&endDate=" + today + "&api_key=" + api_key;
+// If we use this next option of query (instead of the previous line)
+// Then this should probably not run too early in the day - pending on the threshold
+// as it might yield false alerts
+fullUrl =
+  url + "?startDate=" + today + "&endDate=" + tommorrow + "&api_key=" + api_key;
 console.log(fullUrl);
 request(fullUrl, { json: true }, (err, res, body) => {
   try {
