@@ -1,5 +1,6 @@
 const request = require("request");
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 var api_key = process.env.SOLAR_API_KEY;
 var mailPass = process.env.GMAIL_PASS;
@@ -13,10 +14,10 @@ const url = "https://monitoringapi.solaredge.com/site/30221/timeFrameEnergy";
 var today = new Date().toISOString().slice(0, 10); // Today!
 var yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
-yesterday = yesterday.toISOString().slice(0, 10); // Yesterday!
 var tommorrow = new Date();
-tommorrow.setDate(yesterday.getDate() + 1);
-tommorrow = tommorrow.toISOString().slice(0, 10); // Yesterday!
+tommorrow.setDate(yesterday.getDate() + 2);
+yesterday = yesterday.toISOString().slice(0, 10); // Yesterday!
+tommorrow = tommorrow.toISOString().slice(0, 10); // Tommorrow!
 var fullUrl =
   url + "?startDate=" + yesterday + "&endDate=" + today + "&api_key=" + api_key;
 // If we use this next option of query (instead of the previous line)
@@ -29,6 +30,10 @@ request(fullUrl, { json: true }, (err, res, body) => {
   try {
     if (err) {
       console.log(err);
+      process.exit(1);
+    }
+    if (body.validationErrors) {
+      console.log(body.validationErrors.validationError[0].message);
       process.exit(1);
     }
     console.log(body);
