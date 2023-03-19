@@ -23,29 +23,38 @@ var fullUrl =
 // If we use this next option of query (instead of the previous line)
 // Then this should probably not run too early in the day - pending on the threshold
 // as it might yield false alerts
-fullUrl =
-  url + "?startDate=" + today + "&endDate=" + tommorrow + "&api_key=" + api_key;
-console.log(fullUrl);
-request(fullUrl, { json: true }, (err, res, body) => {
-  try {
-    if (err) {
+
+var runDaily = function run() {
+  fullUrl =
+    url +
+    "?startDate=" +
+    today +
+    "&endDate=" +
+    tommorrow +
+    "&api_key=" +
+    api_key;
+  console.log(fullUrl);
+  request(fullUrl, { json: true }, (err, res, body) => {
+    try {
+      if (err) {
+        console.log(err);
+        process.exit(1);
+      }
+      if (body.validationErrors) {
+        console.log(body.validationErrors.validationError[0].message);
+        process.exit(1);
+      }
+      console.log(body);
+      if (parseFloat(body.timeFrameEnergy.energy) < threshold) {
+        sendAlert(body.timeFrameEnergy.energy);
+      }
+      // process.exit(0);
+    } catch (err) {
       console.log(err);
       process.exit(1);
     }
-    if (body.validationErrors) {
-      console.log(body.validationErrors.validationError[0].message);
-      process.exit(1);
-    }
-    console.log(body);
-    if (parseFloat(body.timeFrameEnergy.energy) < threshold) {
-      sendAlert(body.timeFrameEnergy.energy);
-    }
-    // process.exit(0);
-  } catch (err) {
-    console.log(err);
-    process.exit(1);
-  }
-});
+  });
+};
 
 function sendAlert(value) {
   var transporter = nodemailer.createTransport({
@@ -72,3 +81,7 @@ function sendAlert(value) {
     }
   });
 }
+
+runDaily();
+
+module.exports.runDaily = runDaily;
