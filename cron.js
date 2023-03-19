@@ -1,5 +1,5 @@
 var app = require("./app");
-import cron from "node-cron";
+const cron = require("node-cron");
 
 // every day at 10AM
 // cron.schedule(`0 10 * * */1`, async () => {
