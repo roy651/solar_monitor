@@ -1,11 +1,11 @@
 var app = require("./app");
 const cron = require("node-cron");
 
-// every day at 10AM
-// cron.schedule(`0 10 * * */1`, async () => {
+// At every minute
+// cron.schedule(`* * * * *`, async () => {
 
-// every minute
-cron.schedule(`* * * * */1`, async () => {
+// At minute 0 past every 2nd hour from 10 through 16.
+cron.schedule(`0 10-16/2 * * *`, async () => {
   console.log(`running daily...`);
   app.runDaily();
   console.log(`daily ended.`);
