@@ -11,7 +11,8 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node cron.js"
+        "start": "node cron.js",
+        "install": "npm ci --omit=dev"
     },
     "author": "",
     "license": "ISC"
