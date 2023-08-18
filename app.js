@@ -1,4 +1,4 @@
-const request = require("request");
+const request = require("axios");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
@@ -18,42 +18,59 @@ var tommorrow = new Date();
 tommorrow.setDate(yesterday.getDate() + 2);
 yesterday = yesterday.toISOString().slice(0, 10); // Yesterday!
 tommorrow = tommorrow.toISOString().slice(0, 10); // Tommorrow!
-var fullUrl =
-  url + "?startDate=" + yesterday + "&endDate=" + today + "&api_key=" + api_key;
+var fullUrl = url + "?startDate=" + yesterday + "&endDate=" + today + "&api_key=" + api_key;
 // If we use this next option of query (instead of the previous line)
 // Then this should probably not run too early in the day - pending on the threshold
 // as it might yield false alerts
 
 var runDaily = function run() {
-  fullUrl =
-    url +
-    "?startDate=" +
-    today +
-    "&endDate=" +
-    tommorrow +
-    "&api_key=" +
-    api_key;
+  fullUrl = url + "?startDate=" + today + "&endDate=" + tommorrow + "&api_key=" + api_key;
   console.log(fullUrl);
-  request(fullUrl, { json: true }, (err, res, body) => {
-    try {
-      if (err) {
+  try {
+    request({
+      method: "get",
+      url: fullUrl,
+      responseType: "json",
+    })
+      .then(function (res) {
+        var body = res.data;
+        console.log(body);
+        if (parseFloat(body.timeFrameEnergy.energy) < threshold) {
+          sendAlert(body.timeFrameEnergy.energy);
+        }
+      })
+      .catch(function (error) {
         console.log(err);
         process.exit(1);
-      }
-      if (body.validationErrors) {
-        console.log(body.validationErrors.validationError[0].message);
-        process.exit(1);
-      }
-      console.log(body);
-      if (parseFloat(body.timeFrameEnergy.energy) < threshold) {
-        sendAlert(body.timeFrameEnergy.energy);
-      }
-      // process.exit(0);
-    } catch (err) {
-      console.log(err);
-      process.exit(1);
-    }
-  });
+      })
+      .finally(function () {
+        // always executed
+      });
+  } catch (err) {
+    console.log(err);
+    process.exit(1);
+  }
+
+  //   request.get(fullUrl, { json: true }, (err, res, body) => {
+  //     try {
+  //       if (err) {
+  //         console.log(err);
+  //         process.exit(1);
+  //       }
+  //       if (body.validationErrors) {
+  //         console.log(body.validationErrors.validationError[0].message);
+  //         process.exit(1);
+  //       }
+  //       console.log(body);
+  //       if (parseFloat(body.timeFrameEnergy.energy) < threshold) {
+  //         sendAlert(body.timeFrameEnergy.energy);
+  //       }
+  //       // process.exit(0);
+  //     } catch (err) {
+  //       console.log(err);
+  //       process.exit(1);
+  //     }
+  //   });
 };
 
 function sendAlert(value) {
