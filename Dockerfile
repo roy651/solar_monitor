@@ -10,3 +10,5 @@ COPY . .
 
 CMD [ "node", "cron.js" ]
 
+EXPOSE 5432/tcp
+
